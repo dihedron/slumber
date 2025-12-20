@@ -1,4 +1,4 @@
-package main
+package monitor
 
 import (
 	"log/slog"
@@ -8,7 +8,14 @@ import (
 	"github.com/dihedron/slumber/internal/power"
 )
 
-func (c *MonitorCommand) Execute(args []string) error {
+type Monitor struct {
+	Timeout string `short:"t" long:"timeout" description:"Idle timeout before action (e.g. 30m, 1h)" default:"30m"`
+	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
+	Action string `short:"a" long:"action" description:"Action to take: hibernate or shutdown" choice:"hibernate" choice:"shutdown" default:"shutdown"`
+}
+
+// Execute runs the monitor command.
+func (c *Monitor) Execute(args []string) error {
 	slog.Info("starting monitor", "timeout", c.Timeout, "action", c.Action)
 
 	duration, err := time.ParseDuration(c.Timeout)

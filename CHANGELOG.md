@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Initial project structure following `netcheck` patterns (Makefile, `.mk` files, `.goreleaser.yaml`).
 - `init.go` for logging (`slog`) and profiling (`pprof`) support.
 - `monitor` command implementation using `jessevdk/go-flags`.
+- `version` command to show application metadata.
 - Process detection logic for VS Code, Antigravity, Windsurf, Cursor, and Zed.
 - Support for detecting editor servers running via interpreters (node, python, sh, etc.).
 - Active SSH connection check via `/proc/net/tcp` to exclude "stuck" editor processes.
