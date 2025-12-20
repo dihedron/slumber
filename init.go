@@ -90,7 +90,7 @@ func init() {
 		case "file":
 			filename := fmt.Sprintf("%s-%d.log", path.Base(os.Args[0]), os.Getpid())
 			var err error
-			writer, err = os.Create(filename)
+			writer, err = os.Create(path.Clean(filename))
 			if err != nil {
 				writer = os.Stderr
 			}
@@ -114,7 +114,7 @@ func init() {
 		),
 	)
 	if ok && filename != "" {
-		f, err := os.Create(filename)
+		f, err := os.Create(path.Clean(filename))
 		if err != nil {
 			slog.Error("could not create CPU profile", "error", err)
 		}
@@ -138,7 +138,7 @@ func init() {
 		),
 	)
 	if ok && filename != "" {
-		f, err := os.Create(filename)
+		f, err := os.Create(path.Clean(filename))
 		if err != nil {
 			slog.Error("could not create memory profile", "error", err)
 		}

@@ -50,13 +50,13 @@ var (
 	// may differ from that of the compiler in case of cross-compilation (GOARCH).
 	GoArch string
 	// Version is the complete version string of the application.
-	Version = "0.1.0"
+	Version = "0.1.1"
 	// VersionMajor is the major version of the application.
 	VersionMajor = "0"
 	// VersionMinor is the minor version of the application.
 	VersionMinor = "1"
 	// VersionPatch is the patch or revision level of the application.
-	VersionPatch = "0"
+	VersionPatch = "1"
 	// Vendor is the name of the vendor or organization responsible for the application.
 	Vendor string
 	// Maintainer is the name of the person or organization responsible for maintaining the application.

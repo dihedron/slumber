@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"log/slog"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -43,7 +44,7 @@ func IsAnyEditorActive(procPath string) []string {
 		}
 
 		cmdlinePath := filepath.Join(procPath, f.Name(), "cmdline")
-		data, err := os.ReadFile(cmdlinePath)
+		data, err := os.ReadFile(path.Clean(cmdlinePath))
 		if err != nil {
 			continue
 		}

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2025-12-20
+
+### Added
+- Dynamic logging configuration via environment variables (`<APP>_LOG_LEVEL`, `<APP>_LOG_STREAM`).
+- CPU and memory profiling control via environment variables.
+
+### Changed
+- Improved security by using `path.Clean` for file path operations.
+
+### Fixed
+- Potential security vulnerabilities (G304: file path as variable).
+
 ## [0.1.0] - 2025-12-20
 
 ### Added

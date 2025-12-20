@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log/slog"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -31,8 +32,8 @@ func HasActiveSSHConnections() (bool, error) {
 	return checkTCP(tcp6Path)
 }
 
-func checkTCP(path string) (bool, error) {
-	file, err := os.Open(path)
+func checkTCP(filename string) (bool, error) {
+	file, err := os.Open(path.Clean(filename))
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
