@@ -2,6 +2,9 @@ package monitor
 
 import (
 	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/dihedron/slumber/internal/detect"
@@ -29,23 +32,32 @@ func (c *Monitor) Execute(args []string) error {
 
 	lastActive := time.Now()
 
-	for range ticker.C {
-		editors := detect.IsAnyEditorActive("/proc")
-		if len(editors) > 0 {
-			slog.Debug("editor sessions active", "editors", editors)
-			lastActive = time.Now()
-		} else {
-			idleTime := time.Since(lastActive)
-			slog.Info("no active editor sessions", "idle", idleTime.String())
-			if idleTime > duration {
-				slog.Warn("idle timeout reached, taking action", "action", c.Action)
-				if c.Action == "hibernate" {
-					return power.Hibernate()
-				} else {
-					return power.Shutdown()
+	// set up signal handling for graceful shutdown
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+
+	for {
+		select {
+		case <-signals:
+			slog.Info("received termination signal, shutting down")
+			return nil
+		case <-ticker.C:
+			editors := detect.IsAnyEditorActive("/proc")
+			if len(editors) > 0 {
+				slog.Debug("editor sessions active", "editors", editors)
+				lastActive = time.Now()
+			} else {
+				idleTime := time.Since(lastActive)
+				slog.Info("no active editor sessions", "idle", idleTime.String())
+				if idleTime > duration {
+					slog.Warn("idle timeout reached, taking action", "action", c.Action)
+					if c.Action == "hibernate" {
+						return power.Hibernate()
+					} else {
+						return power.Shutdown()
+					}
 				}
 			}
 		}
 	}
-	return nil
 }

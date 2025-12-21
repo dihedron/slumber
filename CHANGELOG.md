@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.1] - 2025-12-20
+## [0.0.1] - 2025-12-21
 
 ### Added
 - Dynamic logging configuration via environment variables (`<APP>_LOG_LEVEL`, `<APP>_LOG_STREAM`).
@@ -10,11 +10,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Improved security by using `path.Clean` for file path operations.
+- Updated `monitor` command to handle signals and exit gracefully.
 
 ### Fixed
 - Potential security vulnerabilities (G304: file path as variable).
 
-## [0.1.0] - 2025-12-20
+## [0.0.0] - 2025-12-20
 
 ### Added
 - Initial project structure following `netcheck` patterns (Makefile, `.mk` files, `.goreleaser.yaml`).
