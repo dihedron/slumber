@@ -1,18 +1,23 @@
 package monitor
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/dihedron/slumber/command/base"
 	"github.com/dihedron/slumber/internal/detect"
-	"github.com/dihedron/slumber/internal/power"
 )
 
 type Monitor struct {
-	Timeout string `short:"t" long:"timeout" description:"Idle timeout before action (e.g. 30m, 1h)" default:"30m"`
+	// Timeout is the idle timeout before action (e.g. 5m, 1h).
+	Timeout base.Duration `short:"t" long:"timeout" description:"Idle timeout before action (e.g. 5m, 1h)" default:"5m"`
+	// Frequency is the frequency of checks (e.g. 15s, 1m).
+	Frequency base.Duration `short:"f" long:"frequency" description:"Frequency of checks (e.g. 15s, 1m)" default:"15s"`
+	// Action is the action to take when the timeout is reached (hibernate or shutdown).
 	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
 	Action string `short:"a" long:"action" description:"Action to take: hibernate or shutdown" choice:"hibernate" choice:"shutdown" default:"shutdown"`
 }
@@ -21,13 +26,14 @@ type Monitor struct {
 func (c *Monitor) Execute(args []string) error {
 	slog.Info("starting monitor", "timeout", c.Timeout, "action", c.Action)
 
-	duration, err := time.ParseDuration(c.Timeout)
-	if err != nil {
-		slog.Error("invalid timeout", "timeout", c.Timeout, "error", err)
-		return err
+	timeout := time.Duration(c.Timeout)
+	frequency := time.Duration(c.Frequency)
+	if frequency > timeout {
+		slog.Warn("frequency is greater than timeout, setting timeout to frequency", "frequency", frequency, "timeout", timeout)
+		timeout = frequency
 	}
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(frequency)
 	defer ticker.Stop()
 
 	lastActive := time.Now()
@@ -40,21 +46,30 @@ func (c *Monitor) Execute(args []string) error {
 		select {
 		case <-signals:
 			slog.Info("received termination signal, shutting down")
+			fmt.Println("received termination signal, shutting down...")
 			return nil
 		case <-ticker.C:
-			editors := detect.IsAnyEditorActive("/proc")
-			if len(editors) > 0 {
-				slog.Debug("editor sessions active", "editors", editors)
+			editors := detect.IsAnyEditorActive2("/proc")
+			if editors {
+				slog.Info("editor sessions active")
+				fmt.Println("editor sessions active...")
 				lastActive = time.Now()
 			} else {
 				idleTime := time.Since(lastActive)
 				slog.Info("no active editor sessions", "idle", idleTime.String())
-				if idleTime > duration {
+				fmt.Println("no active editor sessions...")
+				if idleTime > timeout {
 					slog.Warn("idle timeout reached, taking action", "action", c.Action)
+					fmt.Printf("idle timeout reached, taking action: %s", c.Action)
 					if c.Action == "hibernate" {
-						return power.Hibernate()
+						slog.Info("hibernating")
+						fmt.Println("hibernating...")
+						//power.Hibernate()
 					} else {
-						return power.Shutdown()
+						slog.Info("shutting down")
+						fmt.Println("shutting down...")
+						//power.Shutdown()
+						return nil
 					}
 				}
 			}

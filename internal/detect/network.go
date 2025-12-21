@@ -73,3 +73,10 @@ func checkTCP(filename string) (bool, error) {
 
 	return false, scanner.Err()
 }
+
+// ConnectionInfo holds the basic details we need to verify an SSH connection
+type ConnectionInfo struct {
+	State      string
+	LocalPort  int
+	RemotePort int
+}

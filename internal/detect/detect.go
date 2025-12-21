@@ -2,6 +2,7 @@ package detect
 
 import (
 	"bytes"
+	"fmt"
 	"log/slog"
 	"os"
 	"path"
@@ -10,6 +11,52 @@ import (
 	"strconv"
 	"strings"
 )
+
+func IsAnyEditorActive2(procPath string) bool {
+
+	pattern := regexp.MustCompile(`(.*)\.vscode-server\/cli\/servers\/.*\/server\/out\/bootstrap-fork.*--type=(?:fileWatcher|extensionHost)`)
+
+	sshActive, err := HasActiveSSHConnections()
+	if err != nil {
+		slog.Error("failed to check SSH connections", "error", err)
+		// If we can't check, we default to safety and assume it might be active
+		// if the process is found. Or should we be strict?
+		// Let's be strict as requested.
+	}
+	if !sshActive {
+		slog.Debug("no active SSH connections, assuming editors are inactive/hung")
+		fmt.Println(" > no active SSH connections, assuming editors are inactive/hung...")
+		return false
+	}
+
+	files, err := os.ReadDir(procPath)
+	if err != nil {
+		slog.Error("failed to read /proc", "error", err)
+		fmt.Println(" > failed to read /proc, assuming editors are inactive/hung...")
+		return false
+	}
+
+	for _, f := range files {
+		if !f.IsDir() || !isPID(f.Name()) {
+			continue
+		}
+
+		filename := path.Clean(filepath.Join(procPath, f.Name(), "cmdline"))
+		data, err := os.ReadFile(filename)
+		if err != nil {
+			continue
+		}
+
+		cmdline := strings.Replace(string(data), "\x00", " ", -1)
+		if pattern.MatchString(cmdline) {
+			slog.Debug("found active editor", "filename", filename, "cmdline", cmdline)
+			return true
+		}
+	}
+
+	slog.Debug("no active editors found")
+	return false
+}
 
 var (
 	editorRegex      = regexp.MustCompile(`vscode-server|code-server|cursor-server|windsurf-server|zed-remote-server|antigravity`)
@@ -28,12 +75,14 @@ func IsAnyEditorActive(procPath string) []string {
 	}
 	if !sshActive {
 		slog.Debug("no active SSH connections, assuming editors are inactive/hung")
+		fmt.Println(" > no active SSH connections, assuming editors are inactive/hung...")
 		return nil
 	}
 
 	files, err := os.ReadDir(procPath)
 	if err != nil {
 		slog.Error("failed to read /proc", "error", err)
+		fmt.Println(" > failed to read /proc, assuming editors are inactive/hung...")
 		return nil
 	}
 
@@ -82,9 +131,11 @@ func IsAnyEditorActive(procPath string) []string {
 		for k := range found {
 			list = append(list, k)
 		}
+		fmt.Printf(" > found active editors: %v\n", list)
 		return list
 	}
 
+	fmt.Println(" > no active editors found...")
 	return nil
 }
 

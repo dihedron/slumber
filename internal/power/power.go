@@ -31,7 +31,7 @@ func callLogind(method string) error {
 	defer conn.Close()
 
 	obj := conn.Object(dbusDest, dbus.ObjectPath(dbusPath))
-	// The boolean argument is for "interactive" (polkit dialog)
+	// the boolean argument is for "interactive" (polkit dialog)
 	call := obj.Call(dbusInterface+"."+method, 0, true)
 	if call.Err != nil {
 		return fmt.Errorf("dbus call to %s failed: %w", method, call.Err)
