@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/dihedron/slumber/command/api"
 	"github.com/dihedron/slumber/command/hibernate"
 	"github.com/dihedron/slumber/command/monitor"
 	"github.com/dihedron/slumber/command/poweroff"
@@ -12,6 +13,9 @@ type Commands struct {
 	// Monitor runs the Monitor command
 	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
 	Monitor monitor.Monitor `command:"monitor" alias:"mon" alias:"m" description:"Monitor for active editor sessions and power off if idle"`
+	// API runs the API server
+	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
+	API api.API `command:"api" alias:"a" description:"Start the gRPC/REST API server"`
 	// Hibernate runs the Hibernate command
 	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
 	Hibernate hibernate.Hibernate `command:"hibernate" alias:"hib" alias:"h" description:"Hibernate the system" hidden:"true"`

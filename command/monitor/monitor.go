@@ -23,11 +23,11 @@ type Monitor struct {
 }
 
 // Execute runs the monitor command.
-func (c *Monitor) Execute(args []string) error {
-	slog.Info("starting monitor", "timeout", c.Timeout, "action", c.Action)
+func (cmd *Monitor) Execute(args []string) error {
+	slog.Info("starting monitor", "timeout", cmd.Timeout, "action", cmd.Action)
 
-	timeout := time.Duration(c.Timeout)
-	frequency := time.Duration(c.Frequency)
+	timeout := time.Duration(cmd.Timeout)
+	frequency := time.Duration(cmd.Frequency)
 	if frequency > timeout {
 		slog.Warn("frequency is greater than timeout, setting timeout to frequency", "frequency", frequency, "timeout", timeout)
 		timeout = frequency
@@ -59,9 +59,9 @@ func (c *Monitor) Execute(args []string) error {
 				slog.Info("no active editor sessions", "idle", idleTime.String())
 				fmt.Println("no active editor sessions...")
 				if idleTime > timeout {
-					slog.Warn("idle timeout reached, taking action", "action", c.Action)
-					fmt.Printf("idle timeout reached, taking action: %s", c.Action)
-					if c.Action == "hibernate" {
+					slog.Warn("idle timeout reached, taking action", "action", cmd.Action)
+					fmt.Printf("idle timeout reached, taking action: %s", cmd.Action)
+					if cmd.Action == "hibernate" {
 						slog.Info("hibernating")
 						fmt.Println("hibernating...")
 						//power.Hibernate()

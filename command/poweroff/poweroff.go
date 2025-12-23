@@ -13,7 +13,7 @@ type PowerOff struct {
 }
 
 // Execute runs the shutdown command.
-func (c *PowerOff) Execute(args []string) error {
+func (_ *PowerOff) Execute(args []string) error {
 	slog.Info("executing poweroff")
 	return power.Shutdown()
 }
