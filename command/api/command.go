@@ -17,7 +17,9 @@ import (
 
 // API is the command to start the API server.
 type API struct {
+	// GRPCPort is the port for the gRPC server.
 	GRPCPort int `short:"g" long:"grpc-port" description:"The port for the gRPC server" default:"9090"`
+	// RESTPort is the port for the REST gateway.
 	RESTPort int `short:"r" long:"rest-port" description:"The port for the REST gateway" default:"8080"`
 }
 

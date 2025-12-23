@@ -11,7 +11,7 @@ version: 2
 project_name: slumber
 
 env:
-  - CGO_ENABLED=0
+  - CGO_ENABLED=1
 #  - _GO_MK_VARS_NAME={{ .Env._GO_MK_VARS_NAME}}
 #  - _GO_MK_VARS_METADATA_PACKAGE={{ .Env._GO_MK_VARS_METADATA_PACKAGE }}
 before:

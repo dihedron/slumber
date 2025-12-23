@@ -13,7 +13,7 @@ type Hibernate struct {
 }
 
 // Execute runs the hibernate command.
-func (c *Hibernate) Execute(args []string) error {
+func (*Hibernate) Execute(args []string) error {
 	slog.Info("executing hibernate")
 	return power.Hibernate()
 }
