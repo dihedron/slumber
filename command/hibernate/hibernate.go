@@ -3,8 +3,8 @@ package hibernate
 import (
 	"log/slog"
 
-	"github.com/dihedron/slumber/command/base"
-	"github.com/dihedron/slumber/internal/power"
+	"github.com/dihedron/slumberd/command/base"
+	"github.com/dihedron/slumberd/internal/power"
 )
 
 type Hibernate struct {

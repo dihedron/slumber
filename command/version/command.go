@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/dihedron/slumber/metadata"
+	"github.com/dihedron/slumberd/metadata"
 )
 
 // Version is the command to print the version of the application.

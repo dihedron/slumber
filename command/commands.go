@@ -1,25 +1,17 @@
 package command
 
 import (
-	"github.com/dihedron/slumber/command/api"
-	"github.com/dihedron/slumber/command/gui"
-	"github.com/dihedron/slumber/command/hibernate"
-	"github.com/dihedron/slumber/command/monitor"
-	"github.com/dihedron/slumber/command/poweroff"
-	"github.com/dihedron/slumber/command/version"
+	"github.com/dihedron/slumberd/command/daemon"
+	"github.com/dihedron/slumberd/command/hibernate"
+	"github.com/dihedron/slumberd/command/poweroff"
+	"github.com/dihedron/slumberd/command/version"
 )
 
 // Commands is the main container for all the commands of the application.
 type Commands struct {
-	// Monitor runs the Monitor command
+	// Daemon runs the daemon command
 	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
-	Monitor monitor.Monitor `command:"monitor" alias:"mon" alias:"m" description:"Monitor for active editor sessions and power off if idle"`
-	// API runs the API server
-	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
-	API api.API `command:"api" alias:"a" description:"Start the gRPC/REST API server"`
-	// GUI runs the Fyne GUI
-	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
-	GUI gui.GUICommand `command:"gui" alias:"g" description:"Start the Fyne GUI"`
+	Daemon daemon.Daemon `command:"daemon" alias:"d" description:"Monitor for active editor sessions and power off if idle"`
 	// Hibernate runs the Hibernate command
 	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
 	Hibernate hibernate.Hibernate `command:"hibernate" alias:"hib" alias:"h" description:"Hibernate the system" hidden:"true"`
