@@ -14,7 +14,6 @@ type Configuration struct {
 	Timeout   *base.Duration `json:"timeout,omitempty" yaml:"timeout,omitempty"`
 	Frequency *base.Duration `json:"frequency,omitempty" yaml:"frequency,omitempty"`
 	Packages  *string        `json:"packages,omitempty" yaml:"packages,omitempty"`
-	Action    *string        `json:"action,omitempty" yaml:"action,omitempty"`
 }
 
 // UnmarshalFlag unmarshals a file path into the Configuration variable.
@@ -41,10 +40,7 @@ func (c *Configuration) UnmarshalFlag(value string) error {
 		slog.Warn("no or invalid packages specified, using default", "packages", c.Packages, "default", "/home/ubuntu/packages.yaml")
 		c.Packages = pointer.To("/home/ubuntu/packages.yaml")
 	}
-	if c.Action == nil || *c.Action == "" {
-		slog.Warn("no or invalid action specified, using default", "action", c.Action, "default", "shutdown")
-		c.Action = pointer.To("shutdown")
-	}
+	// check that values are valid
 	timeout := time.Duration(*c.Timeout)
 	frequency := time.Duration(*c.Frequency)
 	if frequency > timeout {

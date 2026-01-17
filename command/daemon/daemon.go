@@ -20,7 +20,7 @@ type Daemon struct {
 
 // Execute runs the daemon command.
 func (cmd *Daemon) Execute(args []string) error {
-	slog.Info("starting daemon", "timeout", cmd.Configuration.Timeout, "action", cmd.Configuration.Action)
+	slog.Info("starting daemon", "timeout", cmd.Configuration.Timeout.String(), "frequency", cmd.Configuration.Frequency.String(), "packages", *cmd.Configuration.Packages)
 
 	timeout := time.Duration(*cmd.Configuration.Timeout)
 	frequency := time.Duration(*cmd.Configuration.Frequency)
@@ -50,20 +50,12 @@ func (cmd *Daemon) Execute(args []string) error {
 			} else {
 				idleTime := time.Since(lastActive)
 				slog.Info("no active editor sessions", "idle", idleTime.String())
-				fmt.Println("no active editor sessions...")
+				fmt.Printf("no active editor sessions... idle: %s\n", idleTime.String())
 				if idleTime > timeout {
-					slog.Warn("idle timeout reached, taking action", "action", *cmd.Configuration.Action)
-					fmt.Printf("idle timeout reached, taking action: %s", *cmd.Configuration.Action)
-					if *cmd.Configuration.Action == "hibernate" {
-						slog.Info("hibernating")
-						fmt.Println("hibernating...")
-						//power.Hibernate()
-					} else {
-						slog.Info("shutting down")
-						fmt.Println("shutting down...")
-						//power.Shutdown()
-						return nil
-					}
+					slog.Warn("idle timeout reached, shutting down...")
+					fmt.Println("shutting down...")
+					//power.Shutdown()
+					return nil
 				}
 			}
 		}

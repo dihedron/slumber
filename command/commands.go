@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/dihedron/slumberd/command/daemon"
-	"github.com/dihedron/slumberd/command/hibernate"
 	"github.com/dihedron/slumberd/command/poweroff"
 	"github.com/dihedron/slumberd/command/version"
 )
@@ -12,9 +11,6 @@ type Commands struct {
 	// Daemon runs the daemon command
 	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
 	Daemon daemon.Daemon `command:"daemon" alias:"d" description:"Monitor for active editor sessions and power off if idle"`
-	// Hibernate runs the Hibernate command
-	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
-	Hibernate hibernate.Hibernate `command:"hibernate" alias:"hib" alias:"h" description:"Hibernate the system" hidden:"true"`
 	// PowerOff runs the PowerOff command
 	//lint:ignore SA5008 go-flags uses multiple tags to define aliases and choices
 	PowerOff poweroff.PowerOff `command:"poweroff" alias:"powoff" alias:"p" description:"Power off the system" hidden:"true"`
