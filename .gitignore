@@ -33,5 +33,6 @@ _test/
 
 # Editor/IDE
 # .idea/
-# .vscode/
+.vscode/
+*.code-workspace
 

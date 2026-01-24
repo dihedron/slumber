@@ -9,26 +9,15 @@ import (
 	"runtime"
 	"runtime/pprof"
 	"strings"
+
+	"github.com/dihedron/slumberd/metadata"
+	"github.com/joho/godotenv"
 )
 
 var (
 	cpuprof *os.File
 	memprof *os.File
 )
-
-func cleanup() {
-	if cpuprof != nil {
-		defer cpuprof.Close()
-		defer pprof.StopCPUProfile()
-	}
-	if memprof != nil {
-		defer memprof.Close()
-		runtime.GC() // get up-to-date statistics
-		if err := pprof.WriteHeapProfile(memprof); err != nil {
-			slog.Error("could not write memory profile", "error", err)
-		}
-	}
-}
 
 func init() {
 	const LevelNone = slog.Level(1000)
@@ -38,7 +27,17 @@ func init() {
 		AddSource: true,
 	}
 
-	// my-app -> MY_APP_LOG_LEVEL
+	// load .env file if specified and present
+	if dotenv, ok := os.LookupEnv(metadata.DotEnvVarName); ok {
+		slog.Info("loading .env file", "path", dotenv)
+		if err := godotenv.Load(dotenv); err != nil {
+			slog.Error("error loading .env file", "error", err)
+		}
+		slog.Info("successfully loaded .env file", "path", dotenv)
+	}
+
+	// get log elevel from environment variable where, given
+	// the binary name "my-app", the environment variable is "MY_APP_LOG_LEVEL"
 	level, ok := os.LookupEnv(
 		fmt.Sprintf(
 			"%s_LOG_LEVEL",
@@ -67,7 +66,8 @@ func init() {
 		}
 	}
 
-	// my-app -> MY_APP_LOG_STREAM
+	// get the name of the file to log to from environment variable where, given
+	// the binary name "my-app", the environment variable is "MY_APP_LOG_STREAM"
 	var writer io.Writer = os.Stderr
 	stream, ok := os.LookupEnv(
 		fmt.Sprintf(
@@ -97,6 +97,7 @@ func init() {
 		}
 	}
 
+	// initialise the logger
 	handler := slog.NewTextHandler(writer, options)
 	slog.SetDefault(slog.New(handler))
 
@@ -143,5 +144,19 @@ func init() {
 			slog.Error("could not create memory profile", "error", err)
 		}
 		memprof = f
+	}
+}
+
+func cleanup() {
+	if cpuprof != nil {
+		defer cpuprof.Close()
+		defer pprof.StopCPUProfile()
+	}
+	if memprof != nil {
+		defer memprof.Close()
+		runtime.GC() // get up-to-date statistics
+		if err := pprof.WriteHeapProfile(memprof); err != nil {
+			slog.Error("could not write memory profile", "error", err)
+		}
 	}
 }

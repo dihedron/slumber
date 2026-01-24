@@ -1,4 +1,4 @@
-package base
+package timex
 
 import (
 	"encoding/json"
